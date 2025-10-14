@@ -1,4 +1,4 @@
-import db from "#db/client";
+import db from "../client.js";
 
 export async function createTrack(name, duration_ms) {
   const sql = `
@@ -12,4 +12,23 @@ export async function createTrack(name, duration_ms) {
     rows: [track],
   } = await db.query(sql, [name, duration_ms]);
   return track;
+}
+
+export async function getTracks() {
+  const sql = `
+    SELECT *
+    FROM tracks
+    `;
+  const { rows: tracks } = await db.query(sql);
+  return tracks;
+}
+
+export async function getTrackById(id) {
+  const sql = `
+    SELECT *
+    FROM tracks
+    WHERE id = $1
+    `;
+  const { rows: track } = await db.query(sql, [id]);
+  return track[0];
 }

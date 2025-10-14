@@ -1,4 +1,4 @@
-import db from "#db/client";
+import db from "../client.js";
 
 export async function createPlaylistTrack(playlist_id, track_id) {
   const sql = `

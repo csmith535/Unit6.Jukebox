@@ -1,4 +1,4 @@
-import db from "#db/client";
+import db from "./client.js";
 import { createTrack } from "./queries/tracks.js";
 import { createPlaylist } from "./queries/playlists.js";
 import { createPlaylistTrack } from "./queries/playliststracks.js";
