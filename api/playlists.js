@@ -5,6 +5,7 @@ import {
   createPlaylist,
   getTracksByPlaylistId,
 } from "../db/queries/playlists.js";
+import { createTrack } from "#db/queries/tracks";
 
 const router = express.Router();
 export default router;
@@ -40,7 +41,17 @@ router
     const tracks = await getTracksByPlaylistId(id);
     res.status(200).send(tracks);
   })
-  .post(async (req, res) => {});
+  .post(async (req, res) => {
+    if (!req.body) return res.status(400).send("Request body required.");
+
+    const { name, duration, trackId } = req.body;
+    if (!name || !duration || !trackId) {
+      return res.status(400).send("Request body requires Name and Description");
+    }
+
+    const track = await createTrack(id);
+    res.status(200).send(track);
+  });
 
 router.route("/:id").get(async (req, res) => {
   const { id } = req.params;
