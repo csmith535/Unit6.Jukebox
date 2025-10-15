@@ -3,6 +3,7 @@ import {
   getPlaylists,
   getPlaylistById,
   createPlaylist,
+  getTracksByPlaylistId,
 } from "../db/queries/playlists.js";
 
 const router = express.Router();
@@ -28,7 +29,17 @@ router
 
 router
   .route("/:id/tracks")
-  .get(async (req, res) => {})
+  .get(async (req, res) => {
+    const { id } = req.params;
+
+    const playlist = await getPlaylistById(id);
+    if (!playlist) {
+      return res.status(404).send("Playlist not found");
+    }
+
+    const tracks = await getTracksByPlaylistId(id);
+    res.status(200).send(tracks);
+  })
   .post(async (req, res) => {});
 
 router.route("/:id").get(async (req, res) => {
