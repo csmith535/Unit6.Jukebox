@@ -5,7 +5,8 @@ import {
   createPlaylist,
   getTracksByPlaylistId,
 } from "../db/queries/playlists.js";
-import { createTrack } from "#db/queries/tracks";
+import { getTrackById } from "../db/queries/tracks.js";
+import { createPlaylistTrack } from "../db/queries/playliststracks.js";
 
 const router = express.Router();
 export default router;
@@ -33,6 +34,11 @@ router
   .get(async (req, res) => {
     const { id } = req.params;
 
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      return res.status(400).send("ID must be a number");
+    }
+
     const playlist = await getPlaylistById(id);
     if (!playlist) {
       return res.status(404).send("Playlist not found");
@@ -42,19 +48,50 @@ router
     res.status(200).send(tracks);
   })
   .post(async (req, res) => {
-    if (!req.body) return res.status(400).send("Request body required.");
+    const { id } = req.params;
 
-    const { name, duration, trackId } = req.body;
-    if (!name || !duration || !trackId) {
-      return res.status(400).send("Request body requires Name and Description");
+    const numId = Number(id);
+    if (isNaN(numId)) {
+      return res.status(400).send("ID must be a number");
     }
 
-    const track = await createTrack(id);
-    res.status(201).send(track);
+    const playlist = await getPlaylistById(id);
+    if (!playlist) {
+      return res.status(404).send("Playlist not found");
+    }
+
+    if (!req.body) return res.status(400).send("Request body required.");
+
+    const { trackId } = req.body;
+    if (!trackId) {
+      return res.status(400).send("Request body requires Track ID");
+    }
+
+    const numTrackId = Number(trackId);
+    if (isNaN(numTrackId)) {
+      return res.status(400).send("Track ID must be a number");
+    }
+
+    const track = await getTrackById(trackId);
+    if (!track) {
+      return res.status(400).send("Track does not exist");
+    }
+
+    const playlistTrack = await createPlaylistTrack(id, trackId);
+    res.status(201).send(playlistTrack);
   });
 
 router.route("/:id").get(async (req, res) => {
   const { id } = req.params;
+
+  const numId = Number(id);
+  if (isNaN(numId)) {
+    return res.status(400).send("ID must be a number");
+  }
+
   const playlist = await getPlaylistById(id);
+  if (!playlist) {
+    return res.status(404).send("Playlist not found");
+  }
   res.status(200).send(playlist);
 });
