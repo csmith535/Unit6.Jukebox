@@ -24,7 +24,7 @@ router
       return res.status(400).send("Request body requires Name and Description");
     }
 
-    const newPlaylist = await createPlaylist(name, description);
+    const newPlaylist = await createPlaylist({ name, description });
     res.status(201).send(newPlaylist);
   });
 
@@ -50,7 +50,7 @@ router
     }
 
     const track = await createTrack(id);
-    res.status(200).send(track);
+    res.status(201).send(track);
   });
 
 router.route("/:id").get(async (req, res) => {
